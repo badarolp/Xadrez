@@ -2,35 +2,63 @@ using UnityEngine;
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
-	
-	public int gameState = 0;			// In this state, the code is waiting for : 0 = Piece selection, 1 = Piece animation, 2 = Player2/AI movement
-	//private int activePlayer = 0;		// 0 = Player1, 1 = Player2, 2 = AI, to be used later
-	private GameObject SelectedPiece;	// Selected Piece
-	
-	//Update SlectedPiece with the GameObject inputted to this function
+	// Neste estado, os valores esperados sao: 0 = Selecao de peca, 1 = animacao de peca, 2 = Player2
+	public int gameState = 0;			
+	// 0 = Player1, 1 = Player2
+	//private int PlayerAtivo = 0;		
+	// Peca selecionada
+	private GameObject pecaSelecionada;	
+	private Material materialBranco;
+	private Material materialPreto;
+	private Material materialSelecionado;
+
+	void Start () 
+	{
+		//Debug.Log ("");
+
+		//materialBranco = GameObject.FindWithTag ("PiecePlayer1").GetComponent<Renderer> ().material;
+		//materialPreto = GameObject.FindWithTag ("PiecePlayer2").GetComponent<Renderer> ().material;
+		materialBranco = GameObject.FindWithTag ("PiecePlayer1").transform.GetChild(0).GetComponent<Renderer> ().material;
+		materialPreto = GameObject.FindWithTag ("PiecePlayer2").transform.GetChild(0).GetComponent<Renderer> ().material;
+		materialSelecionado = new Material (materialPreto.shader);
+		materialSelecionado.color = Color.red;
+	}
+
+	//Atualiza SlectedPiece com o input do GameObject para essa funcao
 	public void SelectPiece(GameObject _PieceToSelect)
-	{
-		// Change color of the selected piece to make it apparent. Put it back to white when the piece is unselected
-		if(SelectedPiece)
+	{ 	
+		// Muda a cor da peca seleciona para destacar. Muda a cor anterior quando a peca sai da selecao
+		if(pecaSelecionada)
 		{
-			SelectedPiece.GetComponent<Renderer>().material.color = Color.white;
+			if (string.Equals(pecaSelecionada.tag,"PiecePlayer1")) {
+				pecaSelecionada.transform.GetChild(0).GetComponent<Renderer> ().material = materialBranco;
+			} else if (string.Equals(pecaSelecionada.tag,"PiecePlayer2")) {
+				pecaSelecionada.transform.GetChild(0).GetComponent<Renderer> ().material = materialPreto;
+			}
 		}
-		SelectedPiece = _PieceToSelect;
-		SelectedPiece.GetComponent<Renderer>().material.color = Color.red;
+		pecaSelecionada = _PieceToSelect;
+		pecaSelecionada.transform.GetChild(0).GetComponent<Renderer>().material = materialSelecionado;
+		//Debug.Log (pecaSelecionada.name);
 	}
-	
-	// Move the SelectedPiece to the inputted coords
+
+	// Move pecaSelecionada para a cordenada do input
 	public void MovePiece(Vector2 _coordToMove)
-	{
-		SelectedPiece.transform.position = _coordToMove;		// Move the piece
-		SelectedPiece.GetComponent<Renderer>().material.color = Color.white;	// Change it's color back
-		SelectedPiece = null;									// Unselect the Piece
+	{	
+		// Move a peca
+		pecaSelecionada.transform.position = _coordToMove;		
+		// Muda para o material anterior
+		if (string.Equals(pecaSelecionada.tag,"PiecePlayer1")) {
+			pecaSelecionada.transform.GetChild(0).GetComponent<Renderer> ().material = materialBranco;
+		} else if (string.Equals(pecaSelecionada.tag,"PiecePlayer2")) {
+			pecaSelecionada.transform.GetChild(0).GetComponent<Renderer> ().material = materialPreto;
+		}
+		// Tira a selecao da peca
+		pecaSelecionada = null;									
 	}
-	
-	// Change the state of the game
+
+	// Muda o estado do jogo
 	public void ChangeState(int _newState)
 	{
 		gameState = _newState;
-		Debug.Log ("GameState = " + _newState);
 	}
 }

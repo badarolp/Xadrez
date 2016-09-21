@@ -2,72 +2,70 @@ using UnityEngine;
 using System.Collections;
 
 public class PlayerControl : MonoBehaviour {
-	
-	
-	private Camera PlayerCam;			// Camera used by the player
-	private GameManager _GameManager; 	// GameObject responsible for the management of the game
-	
-	// Use this for initialization
+
+	// Camera usada pelo jogador
+	private Camera PlayerCam;			
+	// GameObject responsavel pelo gerenciamento do game
+	private GameManager GameManager; 	
+
+	// Inicializacao
 	void Start () 
 	{
-		PlayerCam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>(); // Find the Camera's GameObject from its tag 
-		_GameManager = gameObject.GetComponent<GameManager>();
+		// Acha o GameObject da Camera pela tag
+		PlayerCam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+		GameManager = gameObject.GetComponent<GameManager>();
 	}
-	
-	// Update is called once per frame
+
+	// Update eh chamado uma vez por frame
 	void Update () {
-		// Look for Mouse Inputs
-		GetMouseInputs();
-		
+		// Procura por inputs do mouse
+		GetMouseInputs();		
 	}
-	
-	// Detect Mouse Inputs
+
+	// Detecta mouse inputs
 	void GetMouseInputs()
 	{	
 		Ray _ray;
 		RaycastHit _hitInfo;
-		
-		// Select a piece if the gameState is 0 or 1
-		if(_GameManager.gameState < 2)
+		// Seleciona um pedaco se o gameState eh 0 ou 1
+		if(GameManager.gameState < 2)
 		{
 			// On Left Click
 			if(Input.GetMouseButtonDown(0))
 			{
-				_ray = PlayerCam.ScreenPointToRay(Input.mousePosition); // Specify the ray to be casted from the position of the mouse click
-				
-				// Raycast and verify that it collided
+				// Especifica o ray para ser classificado da posicao do mouse click
+				_ray = PlayerCam.ScreenPointToRay(Input.mousePosition); 
+				// Raycast e verifica se eh uma colisao
 				if(Physics.Raycast (_ray,out _hitInfo))
-				{
-					// Select the piece if it has the good Tag
-					if(_hitInfo.collider.gameObject.tag == ("PiecePlayer1"))
+				{	
+					// Seleciona o pedaco se tiver uma Tag
+					if(_hitInfo.collider.gameObject.tag == ("PiecePlayer1") || _hitInfo.collider.gameObject.tag == ("PiecePlayer2"))
 					{
-						_GameManager.SelectPiece(_hitInfo.collider.gameObject);
-						_GameManager.ChangeState (1);
+						GameManager.SelectPiece(_hitInfo.collider.gameObject);
+						GameManager.ChangeState (1);
 					}
 				}
 			}
 		}
-		
-		// Move the piece if the gameState is 1
-		if(_GameManager.gameState == 1)
+
+		// Move a peca se o gameState eh 1
+		if(GameManager.gameState == 1)
 		{
 			Vector2 selectedCoord;
-			
-			// On Left Click
+			// Com click esquerdo
 			if(Input.GetMouseButtonDown(0))
 			{
-				_ray = PlayerCam.ScreenPointToRay(Input.mousePosition); // Specify the ray to be casted from the position of the mouse click
-				
-				// Raycast and verify that it collided
+				// Especifica o ray para ser classificado da posicao do mouse click
+				_ray = PlayerCam.ScreenPointToRay(Input.mousePosition);
+				// Raycast and e verifica se eh uma colisao
 				if(Physics.Raycast (_ray,out _hitInfo))
 				{
-					
-					// Select the piece if it has the good Tag
+					// Seleciona a peca se tiver uma Tag
 					if(_hitInfo.collider.gameObject.tag == ("Cube"))
 					{
 						selectedCoord = new Vector2(_hitInfo.collider.gameObject.transform.position.x,_hitInfo.collider.gameObject.transform.position.y);
-						_GameManager.MovePiece(selectedCoord);
-						_GameManager.ChangeState (0);
+						GameManager.MovePiece(selectedCoord);
+						GameManager.ChangeState (0);
 					}
 				}
 			}	
